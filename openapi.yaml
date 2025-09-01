@@ -1,7 +1,7 @@
 ﻿openapi: 3.0.3
 info:
   title: Restaurant MERN API
-  description: Full-stack restaurant website API with authentication, reservations, orders, and payments
+  description: Complete API specification for Restaurant MERN application
   version: 1.0.0
   contact:
     name: Restaurant MERN Team
@@ -9,13 +9,13 @@ info:
 
 servers:
   - url: http://localhost:5000/api/v1
-    description: Local development server
-  - url: https://restaurant-mern-backend.render.com/api/v1
+    description: Development server
+  - url: https://restaurant-mern-api.onrender.com/api/v1
     description: Production server
 
 components:
   securitySchemes:
-    bearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
@@ -26,18 +26,24 @@ components:
       properties:
         id:
           type: string
+          example: "507f1f77bcf86cd799439011"
         email:
           type: string
           format: email
+          example: "user@example.com"
         name:
           type: string
+          example: "John Doe"
         phone:
           type: string
+          example: "+91 9876543210"
         role:
           type: string
           enum: [customer, admin]
+          example: "customer"
         isActive:
           type: boolean
+          example: true
         createdAt:
           type: string
           format: date-time
@@ -50,26 +56,48 @@ components:
       properties:
         id:
           type: string
+          example: "507f1f77bcf86cd799439011"
         name:
           type: string
+          example: "Butter Chicken"
         description:
           type: string
+          example: "Creamy tomato-based curry with tender chicken pieces"
         price:
           type: number
+          example: 385
         category:
           type: string
           enum: [appetizer, main, dessert, beverage]
+          example: "main"
         image:
           type: string
           format: uri
+          example: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db"
         isVeg:
           type: boolean
+          example: false
         isAvailable:
           type: boolean
+          example: true
         ingredients:
           type: array
           items:
             type: string
+          example: ["Chicken", "Tomatoes", "Cream"]
+        preparationTime:
+          type: number
+          example: 30
+        spiceLevel:
+          type: string
+          enum: [mild, medium, hot, very_hot]
+          example: "mild"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
 
     ApiResponse:
       type: object
@@ -82,26 +110,37 @@ components:
           type: object
         error:
           type: string
+        errors:
+          type: array
+          items:
+            type: object
 
-    Error:
+    AuthResponse:
       type: object
       properties:
         success:
           type: boolean
-          example: false
+          example: true
         message:
           type: string
-        error:
-          type: string
+          example: "Login successful"
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            accessToken:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
 paths:
   /health:
     get:
       summary: Health check endpoint
-      tags: [System]
+      description: Check if the API is running and database is connected
       responses:
         '200':
-          description: Server is healthy
+          description: API is healthy
           content:
             application/json:
               schema:
@@ -110,88 +149,336 @@ paths:
   /auth/register:
     post:
       summary: Register new user
-      tags: [Authentication]
+      description: Create a new user account
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [email, password, name]
+              required:
+                - email
+                - password
+                - name
               properties:
                 email:
                   type: string
                   format: email
+                  example: "user@example.com"
                 password:
                   type: string
                   minLength: 6
+                  example: "SecurePass123"
                 name:
                   type: string
                   minLength: 2
+                  example: "John Doe"
                 phone:
                   type: string
+                  example: "+91 9876543210"
       responses:
         '201':
           description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          headers:
+            Set-Cookie:
+              description: Refresh token cookie
+              schema:
+                type: string
+                example: "refreshToken=eyJ...; HttpOnly; Secure; SameSite=Strict"
         '400':
-          description: Invalid input data
-        '409':
-          description: User already exists
+          description: Validation error or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
 
   /auth/login:
     post:
-      summary: Login user
-      tags: [Authentication]
+      summary: User login
+      description: Authenticate user and return tokens
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [email, password]
+              required:
+                - email
+                - password
               properties:
                 email:
                   type: string
                   format: email
+                  example: "user@example.com"
                 password:
                   type: string
+                  example: "SecurePass123"
       responses:
         '200':
           description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          headers:
+            Set-Cookie:
+              description: Refresh token cookie
+              schema:
+                type: string
         '401':
           description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      description: Get new access token using refresh token
+      parameters:
+        - in: cookie
+          name: refreshToken
+          required: true
+          schema:
+            type: string
+          description: Refresh token cookie
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Token refreshed successfully"
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+          headers:
+            Set-Cookie:
+              description: New refresh token cookie
+              schema:
+                type: string
+        '401':
+          description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
 
   /auth/logout:
     post:
-      summary: Logout user
-      tags: [Authentication]
+      summary: User logout
+      description: Logout user and invalidate tokens
       security:
-        - bearerAuth: []
+        - BearerAuth: []
+      parameters:
+        - in: cookie
+          name: refreshToken
+          schema:
+            type: string
       responses:
         '200':
           description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+          headers:
+            Set-Cookie:
+              description: Clear refresh token cookie
+              schema:
+                type: string
+                example: "refreshToken=; Max-Age=0"
+
+  /auth/me:
+    get:
+      summary: Get current user
+      description: Get current authenticated user information
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User information retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
 
   /dishes:
     get:
       summary: Get all dishes
-      tags: [Dishes]
+      description: Retrieve all available dishes with filtering options
       parameters:
-        - name: category
-          in: query
+        - in: query
+          name: category
           schema:
             type: string
             enum: [appetizer, main, dessert, beverage]
-        - name: isVeg
-          in: query
+          description: Filter by dish category
+        - in: query
+          name: isVeg
           schema:
             type: boolean
-        - name: available
-          in: query
+          description: Filter vegetarian dishes
+        - in: query
+          name: isAvailable
           schema:
             type: boolean
+            default: true
+          description: Filter available dishes
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+          description: Number of items per page
       responses:
         '200':
-          description: List of dishes
+          description: Dishes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      dishes:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Dish'
+                      pagination:
+                        type: object
+                        properties:
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+                          pages:
+                            type: integer
+
+    post:
+      summary: Create new dish
+      description: Create a new dish (Admin only)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+                - price
+                - category
+                - image
+                - isVeg
+                - preparationTime
+              properties:
+                name:
+                  type: string
+                  example: "Butter Chicken"
+                description:
+                  type: string
+                  example: "Creamy tomato-based curry"
+                price:
+                  type: number
+                  example: 385
+                category:
+                  type: string
+                  enum: [appetizer, main, dessert, beverage]
+                image:
+                  type: string
+                  format: uri
+                isVeg:
+                  type: boolean
+                ingredients:
+                  type: array
+                  items:
+                    type: string
+                preparationTime:
+                  type: number
+                spiceLevel:
+                  type: string
+                  enum: [mild, medium, hot, very_hot]
+                  default: mild
+      responses:
+        '201':
+          description: Dish created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      dish:
+                        $ref: '#/components/schemas/Dish'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Admin access required
+
+  /dishes/{id}:
+    get:
+      summary: Get dish by ID
+      description: Retrieve a specific dish by its ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Dish ID
+      responses:
+        '200':
+          description: Dish retrieved successfully
           content:
             application/json:
               schema:
@@ -200,75 +487,28 @@ paths:
                   success:
                     type: boolean
                   data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Dish'
+                    type: object
+                    properties:
+                      dish:
+                        $ref: '#/components/schemas/Dish'
+        '404':
+          description: Dish not found
 
-  /reservations:
-    get:
-      summary: Get user reservations
-      tags: [Reservations]
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: List of reservations
-    post:
-      summary: Create new reservation
-      tags: [Reservations]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [date, time, guests]
-              properties:
-                date:
-                  type: string
-                  format: date
-                time:
-                  type: string
-                guests:
-                  type: integer
-                  minimum: 1
-                  maximum: 20
-                specialRequests:
-                  type: string
-      responses:
-        '201':
-          description: Reservation created successfully
-
-  /orders:
-    get:
-      summary: Get user orders
-      tags: [Orders]
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: List of orders
-    post:
-      summary: Create new order
-      tags: [Orders]
-      security:
-        - bearerAuth: []
-      responses:
-        '201':
-          description: Order created successfully
+security:
+  - BearerAuth: []
 
 tags:
-  - name: System
-    description: System health and status
   - name: Authentication
-    description: User authentication and authorization
+    description: User authentication endpoints
   - name: Dishes
-    description: Restaurant menu management
+    description: Menu and dish management
+  - name: Users
+    description: User profile management
   - name: Reservations
-    description: Table reservation management
+    description: Table reservation system
   - name: Orders
-    description: Food order management
-  - name: Admin
-    description: Administrative functions
+    description: Food ordering system
+  - name: Coupons
+    description: Discount and coupon management
+  - name: Reviews
+    description: Review and rating system
