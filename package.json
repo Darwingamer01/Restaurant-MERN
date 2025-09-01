@@ -1,0 +1,28 @@
+{
+  "name": "restaurant-mern",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@restaurant/backend & npm run dev --workspace=@restaurant/frontend",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start --workspace=@restaurant/backend",
+    "seed": "npm run seed --workspace=@restaurant/backend",
+    "clean": "npm run clean --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.11.5",
+    "jest": "^30.1.2",
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

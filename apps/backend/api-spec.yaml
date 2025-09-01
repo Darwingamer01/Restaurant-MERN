@@ -1,0 +1,572 @@
+openapi: 3.0.3
+info:
+  title: Restaurant MERN API
+  description: Complete API specification for the restaurant website
+  version: 1.0.0
+  contact:
+    name: Utkarsh Choudhary
+    url: https://github.com/Darwingamer01
+servers:
+  - url: http://localhost:4000/api
+    description: Development server
+  - url: https://your-app.onrender.com/api
+    description: Production server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        avatar:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        preferences:
+          type: object
+          properties:
+            theme:
+              type: string
+              enum: [light, dark, system]
+            notifications:
+              type: object
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    
+    Dish:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+          enum: [appetizer, main, dessert, beverage, special]
+        cuisine:
+          type: string
+          enum: [indian, chinese, continental, italian, mexican, thai]
+        isVegetarian:
+          type: boolean
+        isVegan:
+          type: boolean
+        isGlutenFree:
+          type: boolean
+        spiceLevel:
+          type: string
+          enum: [mild, medium, hot, very-hot]
+        preparationTime:
+          type: number
+        ingredients:
+          type: array
+          items:
+            type: string
+        allergens:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            type: string
+        isAvailable:
+          type: boolean
+        isSpecial:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+        averageRating:
+          type: number
+        totalReviews:
+          type: number
+    
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+        statusCode:
+          type: number
+
+paths:
+  # Auth Routes
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, confirmPassword]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+                confirmPassword:
+                  type: string
+      responses:
+        201:
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        400:
+          description: Validation error
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout user
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Logout successful
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      responses:
+        200:
+          description: Token refreshed successfully
+
+  # User Routes
+  /users/profile:
+    get:
+      tags:
+        - User
+      summary: Get user profile
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+    
+    put:
+      tags:
+        - User
+      summary: Update user profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phone:
+                  type: string
+                avatar:
+                  type: string
+      responses:
+        200:
+          description: Profile updated successfully
+
+  /users/change-password:
+    put:
+      tags:
+        - User
+      summary: Change user password
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [currentPassword, newPassword, confirmPassword]
+              properties:
+                currentPassword:
+                  type: string
+                newPassword:
+                  type: string
+                  minLength: 6
+                confirmPassword:
+                  type: string
+      responses:
+        200:
+          description: Password changed successfully
+
+  # Dishes Routes
+  /dishes:
+    get:
+      tags:
+        - Dishes
+      summary: Get all dishes with filters
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: cuisine
+          in: query
+          schema:
+            type: string
+        - name: isVegetarian
+          in: query
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: Dishes retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Dish'
+                          total:
+                            type: number
+                          page:
+                            type: number
+                          limit:
+                            type: number
+                          totalPages:
+                            type: number
+
+    post:
+      tags:
+        - Dishes
+      summary: Create new dish (Admin only)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, description, price, category, cuisine, preparationTime, ingredients, images]
+      responses:
+        201:
+          description: Dish created successfully
+
+  /dishes/{id}:
+    get:
+      tags:
+        - Dishes
+      summary: Get dish by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Dish retrieved successfully
+        404:
+          description: Dish not found
+
+    put:
+      tags:
+        - Dishes
+      summary: Update dish (Admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Dish updated successfully
+
+    delete:
+      tags:
+        - Dishes
+      summary: Delete dish (Admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Dish deleted successfully
+
+  # Reservations Routes
+  /reservations:
+    get:
+      tags:
+        - Reservations
+      summary: Get user reservations
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Reservations retrieved successfully
+
+    post:
+      tags:
+        - Reservations
+      summary: Create new reservation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date, time, guests, contactPhone]
+              properties:
+                date:
+                  type: string
+                  format: date
+                time:
+                  type: string
+                guests:
+                  type: number
+                  minimum: 1
+                  maximum: 20
+                contactPhone:
+                  type: string
+                occasion:
+                  type: string
+                  enum: [birthday, anniversary, business, date, family, other]
+                specialRequests:
+                  type: string
+      responses:
+        201:
+          description: Reservation created successfully
+
+  # Reviews Routes
+  /reviews:
+    get:
+      tags:
+        - Reviews
+      summary: Get reviews
+      parameters:
+        - name: dishId
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+      responses:
+        200:
+          description: Reviews retrieved successfully
+
+    post:
+      tags:
+        - Reviews
+      summary: Create new review
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating, title, comment, visitDate]
+              properties:
+                rating:
+                  type: number
+                  minimum: 1
+                  maximum: 5
+                title:
+                  type: string
+                  minLength: 5
+                  maxLength: 100
+                comment:
+                  type: string
+                  minLength: 10
+                  maxLength: 1000
+                visitDate:
+                  type: string
+                  format: date
+                dishId:
+                  type: string
+                wouldRecommend:
+                  type: boolean
+      responses:
+        201:
+          description: Review created successfully
+
+  # Coupons Routes
+  /coupons/apply:
+    post:
+      tags:
+        - Coupons
+      summary: Apply coupon to order
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, orderAmount]
+              properties:
+                code:
+                  type: string
+                orderAmount:
+                  type: number
+      responses:
+        200:
+          description: Coupon applied successfully
+
+  # Contact Routes
+  /contact:
+    post:
+      tags:
+        - Contact
+      summary: Send contact form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, phone, subject, message]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                subject:
+                  type: string
+                message:
+                  type: string
+      responses:
+        200:
+          description: Message sent successfully
+
+  # File Upload Routes
+  /upload/image:
+    post:
+      tags:
+        - Upload
+      summary: Upload image to Cloudinary
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Image uploaded successfully
