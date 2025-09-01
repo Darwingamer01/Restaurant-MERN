@@ -273,23 +273,23 @@ After Sprint 1 completion:
 
 ### .env.example CONTENTS
 # Database
-MONGO_URI=mongodb+srv://utkarsh11980_db_user:3Uj842mHSjszp77P@cluster0.lshxu6q.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+MONGO_URI=
 
 # JWT Secrets (generate with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
-JWT_SECRET=8ab4c6586b7b3a4e33971186e07d1d4bd0206887676d7e2c3d6f44672318704a6b00ede50ceacc90d664ad28d1eb72ec7c5df65c4c71a340847ce8cb2991471f
-JWT_REFRESH_SECRET=3889b11e8e31f9976f77e85386ccf2084aad3388caee951b541c06cf3207396baf67081f1dd3510e658a485ca112e558e3144ad73b1770294141f2b80f569297
+JWT_SECRET=
+JWT_REFRESH_SECRET=
 
 # Cloudinary (Image Storage)
-CLOUDINARY_CLOUD_NAME=ds8x2ewe5
-CLOUDINARY_API_KEY=567697455819193
-CLOUDINARY_API_SECRET=gEpXx5HQpPIejgavqS6oztFIeH4
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 
 # Unsplash API (Food Images)
-UNSPLASH_ACCESS_KEY=5acW27zj_675JyLn27YdT7ld0RP3bJ-Oug52maGfjvA
+UNSPLASH_ACCESS_KEY=
 
 # Razorpay (Payments)
-RAZORPAY_KEY_ID=rzp_test_RCSmTjqgWvIQb7
-RAZORPAY_KEY_SECRET=CzskAPErsonSriikCP0G4QIo
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
 
 # Frontend URL (for CORS)
 VITE_API_BASE_URL=http://localhost:5000/api/v1
