@@ -1,0 +1,42 @@
+{
+  "name": "@restaurant/backend",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "seed": "tsx src/scripts/seed.ts"
+  },
+  "dependencies": {
+    "@restaurant/shared": "*",
+    "express": "^4.18.0",
+    "mongoose": "^8.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.0",
+    "cors": "^2.8.0",
+    "helmet": "^7.0.0",
+    "express-rate-limit": "^7.0.0",
+    "compression": "^1.7.0",
+    "multer": "^1.4.4-lts.1",
+    "cloudinary": "^1.41.0",
+    "razorpay": "^2.9.0",
+    "dotenv": "^16.3.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/bcryptjs": "^2.4.0",
+    "@types/cors": "^2.8.0",
+    "@types/compression": "^1.7.0",
+    "@types/multer": "^1.4.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "supertest": "^7.1.3",
+    "@types/supertest": "^6.0.0"
+  }
+}
