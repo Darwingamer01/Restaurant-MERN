@@ -1,0 +1,48 @@
+name: 🚀 Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_run:
+    workflows: ["🚀 CI/CD Pipeline - Restaurant MERN"]
+    types: [completed]
+    branches: [ main ]
+
+jobs:
+  deploy-backend:
+    name: 🏗️ Deploy Backend to Render
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: 📦 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+
+      - name: ✅ Backend Deployment Complete
+        run: echo "🎉 Backend deployed successfully to Render!"
+
+  deploy-frontend:
+    name: 🎨 Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: 📦 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./apps/frontend
+
+      - name: ✅ Frontend Deployment Complete
+        run: echo "🎉 Frontend deployed successfully to Vercel!"

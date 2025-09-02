@@ -1,0 +1,46 @@
+name: 🔍 Performance & Health Monitoring
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    name: 🔍 Lighthouse Performance Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
+
+  health-check:
+    name: 🏥 API Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🏥 Check Backend Health
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.BACKEND_URL }}/api/v1/health)
+          if [ $response -eq 200 ]; then
+            echo "✅ Backend health check passed"
+          else
+            echo "❌ Backend health check failed with status $response"
+            exit 1
+          fi
+
+      - name: 🌐 Check Frontend Availability
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.FRONTEND_URL }})
+          if [ $response -eq 200 ]; then
+            echo "✅ Frontend health check passed"
+          else
+            echo "❌ Frontend health check failed with status $response"
+            exit 1
+          fi
