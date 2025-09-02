@@ -17,11 +17,18 @@
     "setup": "powershell -ExecutionPolicy Bypass -File scripts/auto-setup.ps1"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/mongodb-memory-server": "^1.8.0",
     "concurrently": "^8.2.0",
+    "cross-env": "^10.0.0",
+    "mongodb-memory-server": "^10.2.0",
     "typescript": "^5.9.2"
   },
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7"
   }
 }

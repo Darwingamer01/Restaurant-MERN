@@ -14,6 +14,7 @@
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
-  setupFilesAfterEnv: ['<rootDir>/src/tests/setup.ts'],
+  setupFilesAfterEnv: ["<rootDir>/src/__tests__/setupTests.ts"],
+  testMatch: ["**/__tests__/**/*.test.ts"],
   testTimeout: 10000,
 };

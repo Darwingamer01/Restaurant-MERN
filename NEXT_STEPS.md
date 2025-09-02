@@ -138,3 +138,86 @@ After Sprint 1 completion:
 - Razorpay account for payment processing
 - Unsplash API key for food images
 - Vercel and Render accounts for deployment (Sprint 5)
+
+# Next Steps - Restaurant MERN
+
+## Sprint 2: Frontend Foundation & Authentication UI
+
+### 🎯 Sprint 2 Goals
+Build complete frontend authentication system and establish component library foundation.
+
+### 📋 Sprint 2 Tasks
+
+#### Component Library Setup
+- [ ] Install and configure shadcn/ui components
+- [ ] Create design system with consistent colors, typography, fonts
+- [ ] Implement dark/light theme switching
+- [ ] Create reusable form components with validation
+- [ ] Set up React Router v6 with protected routes
+
+#### Authentication Frontend
+- [ ] Create login/register forms with Zod validation
+- [ ] Implement authentication context with React Query
+- [ ] Add protected route wrapper component
+- [ ] Create user profile page with edit functionality
+- [ ] Add logout functionality with token cleanup
+- [ ] Implement automatic token refresh logic
+
+#### Layout & Navigation
+- [ ] Create responsive navigation bar with user menu
+- [ ] Implement sidebar navigation for admin users
+- [ ] Add footer with restaurant information
+- [ ] Create loading states and error boundaries
+- [ ] Implement breadcrumb navigation
+
+#### State Management
+- [ ] Set up React Query for API calls
+- [ ] Create custom hooks for authentication
+- [ ] Implement optimistic updates for better UX
+- [ ] Add error handling and retry logic
+- [ ] Create loading and error state components
+
+#### Authentication Integration
+- [ ] Connect login form to backend API
+- [ ] Implement registration flow with validation
+- [ ] Add remember me functionality
+- [ ] Create password strength indicator
+- [ ] Add social login preparation (Google/Facebook)
+
+### 🔧 Technical Requirements
+- React Query for all API calls
+- Form validation with React Hook Form + Zod
+- Responsive design with Tailwind CSS
+- Accessible components following WCAG guidelines
+- TypeScript strict mode enforcement
+- Error boundaries for production resilience
+
+### 📦 Expected Deliverables
+- Complete authentication UI with login/register
+- Protected routing system
+- Responsive navigation and layout
+- Design system with theme switching
+- React Query integration for API calls
+- User profile management interface
+
+### 🚦 Sprint 2 Success Criteria
+- [ ] User can register and login through frontend
+- [ ] Protected routes redirect unauthenticated users
+- [ ] Token refresh happens automatically
+- [ ] Forms have proper validation and error messages
+- [ ] UI is responsive on mobile and desktop
+- [ ] Theme switching works correctly
+- [ ] All TypeScript types are properly defined
+
+### ⚠️ Dependencies from Sprint 1
+- ✅ Backend authentication API working
+- ✅ JWT token system implemented
+- ✅ User model with proper validation
+- ✅ Shared types available for frontend use
+
+### 🔄 Handoff to Sprint 3
+After Sprint 2 completion:
+- Frontend will have complete authentication system
+- Users can manage their profiles
+- Foundation ready for reservation and menu features
+- Component library established for rapid development

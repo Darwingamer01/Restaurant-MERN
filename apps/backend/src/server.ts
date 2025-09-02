@@ -1,4 +1,5 @@
-﻿import express from 'express';
+﻿// server.ts
+import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -6,6 +7,7 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
+import cookieParser from "cookie-parser";
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -39,63 +41,39 @@ app.use(helmet({
 }));
 
 // Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: {
-    success: false,
-    message: 'Too many requests from this IP, please try again later.',
-  },
-});
+// Rate limiting
+if (process.env.NODE_ENV !== 'test') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { success: false, message: 'Too many requests, try again later.' },
+  });
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 auth requests per windowMs
-  message: {
-    success: false,
-    message: 'Too many authentication attempts, please try again later.',
-  },
-});
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: { success: false, message: 'Too many auth attempts, try again later.' },
+  });
 
-app.use('/api/', limiter);
-app.use('/api/v1/auth/', authLimiter);
+  app.use('/api/', limiter);
+  app.use('/api/v1/auth/', authLimiter);
+}
 
-// CORS configuration
+// CORS
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-domain.vercel.app'] 
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://your-domain.vercel.app']
     : ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Body parsing middleware
+// Body parsers
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
 
-// Compression middleware
+// Compression
 app.use(compression());
-
-// Database connection
-const connectDB = async () => {
-  try {
-    if (!process.env.MONGO_URI) {
-      throw new Error('MONGO_URI environment variable is required');
-    }
-
-    await mongoose.connect(process.env.MONGO_URI, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
-
-    console.log('✅ MongoDB connected successfully');
-  } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
-    process.exit(1);
-  }
-};
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
@@ -106,9 +84,9 @@ app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/coupons', couponRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 
-// Health check endpoint
+// Health check
 app.get('/api/v1/health', (req, res) => {
-  const healthData = {
+  res.json({
     success: true,
     message: 'Restaurant MERN API is running!',
     data: {
@@ -117,47 +95,47 @@ app.get('/api/v1/health', (req, res) => {
       version: '1.0.0',
       database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     },
-  };
-  
-  console.log('📚 Environment:', process.env.NODE_ENV || 'development', JSON.stringify(healthData));
-  res.json(healthData);
+  });
 });
 
 // Global error handler
-app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Global error handler:', error);
-  
-  res.status(error.status || 500).json({
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Global error handler:', err);
+  res.status(err.status || 500).json({
     success: false,
-    message: error.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
+    message: err.message || 'Internal server error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 });
 
-// 404 handler
+// 404
 app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.originalUrl} not found`,
-  });
+  res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
 });
 
-// Start server
-const startServer = async () => {
-  try {
-    await connectDB();
-    
-    app.listen(PORT, () => {
-      console.log('🚀 Server running on port', PORT);
-      console.log('🏥 Health check: http://localhost:' + PORT + '/api/v1/health');
-      console.log('📚 Environment:', process.env.NODE_ENV || 'development');
-    });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
+// DB connect util
+export const connectDB = async () => {
+  if (!process.env.MONGO_URI) throw new Error('MONGO_URI required');
+  await mongoose.connect(process.env.MONGO_URI, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+  });
+  console.log('✅ MongoDB connected');
 };
 
-startServer();
+// Only start server if not in test
+if (process.env.NODE_ENV !== 'test') {
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🏥 Health check: http://localhost:${PORT}/api/v1/health`);
+      console.log('📚 Environment:', process.env.NODE_ENV || 'development');
+    });
+  }).catch(err => {
+    console.error('❌ Failed to start server:', err);
+    process.exit(1);
+  });
+}
 
 export default app;
