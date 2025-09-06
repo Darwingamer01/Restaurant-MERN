@@ -1,5 +1,4 @@
 // apps/frontend/src/components/auth/RegisterForm.tsx
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -21,7 +19,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
   const { register: registerUser } = useAuth();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const {
     register,
@@ -99,3 +97,4 @@ export function RegisterForm() {
     </Card>
   );
 }
+

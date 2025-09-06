@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 
 const Layout: React.FC = () => {
@@ -7,7 +7,7 @@ const Layout: React.FC = () => {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-primary">
-            🍽️ Restaurant MERN
+            ??? Restaurant MERN
           </h1>
         </div>
       </header>

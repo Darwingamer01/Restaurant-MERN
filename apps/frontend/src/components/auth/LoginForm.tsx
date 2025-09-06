@@ -1,5 +1,4 @@
 // apps/frontend/src/components/auth/LoginForm.tsx
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -19,7 +17,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const { login } = useAuth();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const {
     register,
@@ -75,3 +73,4 @@ export function LoginForm() {
     </Card>
   );
 }
+

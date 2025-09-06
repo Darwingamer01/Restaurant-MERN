@@ -7,7 +7,7 @@ async function fetchWithAuth(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  let token = localStorage.getItem("accessToken");
+  let token = localStorage.getItem("accessToken") || undefined;
 
   const makeRequest = async (t?: string) => {
     return fetch(`${API_BASE_URL}${endpoint}`, {
@@ -44,3 +44,4 @@ async function fetchWithAuth(
 }
 
 export { fetchWithAuth };
+

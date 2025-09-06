@@ -1,5 +1,6 @@
+import '@testing-library/jest-dom';
 // apps/frontend/src/__tests__/pages.test.tsx
-import React from 'react';
+import { cleanup } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'; // ✅ ADDED
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Home } from '@/pages/Home';
 import { Register } from '@/pages/Register';
 import { AuthProvider } from '@/contexts/AuthContext';
+import '@testing-library/jest-dom';
 
 // Mock fetch globally
 global.fetch = global.fetch || (() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }) as any);
@@ -43,10 +45,7 @@ describe('Pages', () => {
   });
 
   afterEach(() => {
-    // Reset mocks after each test
-    if (global.fetch && typeof global.fetch.mockReset === 'function') {
-      (global.fetch as any).mockReset();
-    }
+    cleanup();
   });
 
   describe('Home Page', () => {
@@ -105,3 +104,5 @@ describe('Pages', () => {
     });
   });
 });
+
+

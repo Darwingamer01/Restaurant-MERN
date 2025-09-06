@@ -1,6 +1,5 @@
-﻿// apps/frontend/src/App.tsx (FIXED - Remove BrowserRouter)
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom'; // ✅ Removed BrowserRouter import
+// apps/frontend/src/App.tsx (FIXED - Remove BrowserRouter)
+import { Routes, Route, Navigate } from 'react-router-dom'; // ? Removed BrowserRouter import
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from './contexts/AuthContext';
@@ -24,7 +23,7 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      {/* ✅ REMOVED: BrowserRouter from here */}
+      {/* ? REMOVED: BrowserRouter from here */}
       <AuthProvider>
         <div className="min-h-screen bg-background">
           <Navbar />

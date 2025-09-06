@@ -1,5 +1,5 @@
 // apps/frontend/src/contexts/AuthContext.tsx
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from 'react-router-dom';
 
@@ -132,10 +132,10 @@ function AuthProviderImpl({ children }: { children: ReactNode }) {
 
   // ✅ Unified fetch with single retry attempt
   const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
-    let token = localStorage.getItem("accessToken");
+    let token = localStorage.getItem("accessToken") ?? undefined;
     console.log('📤 Making authenticated request to:', endpoint, 'with token:', !!token);
 
-    const makeRequest = async (accessToken?: string) => {
+    const makeRequest = async (accessToken?: string | null) => {
       const headers = {
         ...(options.headers || {}),
         "Content-Type": "application/json",
@@ -176,7 +176,7 @@ function AuthProviderImpl({ children }: { children: ReactNode }) {
     queryKey: ["auth", "me"],
     queryFn: async () => {
       console.log('👤 Fetching current user...');
-      const token = localStorage.getItem("accessToken");
+      const token = localStorage.getItem("accessToken") ?? undefined;
       if (!token) throw new Error("No token");
 
       const response = await fetchWithAuth("/auth/me");
@@ -292,7 +292,7 @@ function AuthProviderImpl({ children }: { children: ReactNode }) {
     const initAuth = async () => {
       console.log('🚀 Initializing auth...');
       try {
-        const token = localStorage.getItem("accessToken");
+        const token = localStorage.getItem("accessToken") ?? undefined;
         if (!token) {
           console.log('🔍 No access token found, trying refresh...');
           try {
@@ -337,7 +337,7 @@ function AuthProviderImpl({ children }: { children: ReactNode }) {
         method: "POST",
         credentials: "include",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("accessToken") ?? undefined}`,
         },
       });
       console.log('✅ Logout request successful');
@@ -381,3 +381,4 @@ export function useAuth() {
   }
   return context;
 }
+

@@ -1,13 +1,15 @@
+import '@testing-library/jest-dom';
 // apps/frontend/src/__tests__/auth.test.tsx
-import React from 'react';
+import { cleanup } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'; // ✅ ADDED
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { AuthProvider } from '@/contexts/AuthContext';
+import '@testing-library/jest-dom';
 
 // Mock fetch globally
 global.fetch = global.fetch || (() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }) as any);
@@ -37,17 +39,15 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
 describe('Authentication Forms', () => {
   beforeEach(() => {
     // Mock fetch for each test
-    global.fetch = () => Promise.resolve({ 
-      ok: true, 
-      json: () => Promise.resolve({ success: true }) 
+    global.fetch = () => Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ success: true })
     }) as any;
   });
 
   afterEach(() => {
     // Reset mocks after each test
-    if (global.fetch && typeof global.fetch.mockReset === 'function') {
-      (global.fetch as any).mockReset();
-    }
+    cleanup();
   });
 
   describe('LoginForm', () => {
@@ -66,7 +66,7 @@ describe('Authentication Forms', () => {
 
     it('shows validation errors for invalid input', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <LoginForm />
@@ -100,7 +100,7 @@ describe('Authentication Forms', () => {
 
     it('shows validation errors for invalid input', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <RegisterForm />
@@ -118,3 +118,5 @@ describe('Authentication Forms', () => {
     });
   });
 });
+
+
