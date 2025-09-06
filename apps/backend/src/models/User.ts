@@ -1,4 +1,5 @@
-﻿import mongoose, { Document, Schema, Types } from "mongoose";
+﻿// apps/backend/src/models/User.ts
+import mongoose, { Document, Schema, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -68,7 +69,6 @@ const userSchema = new Schema<IUser>(
 );
 
 // Indexes
-userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
 
 // Remove sensitive fields
@@ -86,7 +86,7 @@ userSchema.pre("save", async function (next) {
 
   try {
     const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password as string, salt);
+    (this as any).password = await bcrypt.hash((this as any).password, salt);
     next();
   } catch (error: any) {
     next(error);
@@ -100,7 +100,8 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate tokens
+// Generate tokens (IMPORTANT: do NOT persist here to avoid race conditions).
+// Caller should persist the refresh token atomically (using $push/$pull).
 userSchema.methods.generateAuthTokens = async function (): Promise<{
   accessToken: string;
   refreshToken: string;
@@ -112,7 +113,8 @@ userSchema.methods.generateAuthTokens = async function (): Promise<{
   const accessToken = jwt.sign(
     { userId: this._id.toString(), email: this.email, role: this.role },
     process.env.JWT_SECRET,
-    { expiresIn: "15m" }
+    // In dev long expiry helps testing; in prod short expiry recommended
+    { expiresIn: process.env.NODE_ENV === "development" ? "12h" : "15m" }
   );
 
   const refreshToken = jwt.sign(
@@ -121,16 +123,7 @@ userSchema.methods.generateAuthTokens = async function (): Promise<{
     { expiresIn: "7d" }
   );
 
-  this.refreshTokens = this.refreshTokens || [];
-  this.refreshTokens.push(refreshToken);
-
-  // Keep only last 5 refresh tokens
-  if (this.refreshTokens.length > 5) {
-    this.refreshTokens = this.refreshTokens.slice(-5);
-  }
-
-  await this.save();
-
+  // DO NOT modify or save the document here to avoid concurrent save conflicts.
   return { accessToken, refreshToken };
 };
 

@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "cross-env NODE_ENV=development dotenv -e ../../.env -- tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "test": "cross-env NODE_ENV=test jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "seed": "tsx src/scripts/seed.ts"
+    "start": "cross-env NODE_ENV=production dotenv -e ../../.env -- node dist/server.js",
+    "seed": "dotenv -e ../../.env -- tsx src/scripts/seed.ts",
+    "test": "cross-env NODE_ENV=test dotenv -e ../../.env -- jest",
+    "test:coverage": "cross-env NODE_ENV=test dotenv -e ../../.env -- jest --coverage",
+    "test:watch": "cross-env NODE_ENV=test dotenv_config_path=../../.env jest --watch"
   },
   "dependencies": {
     "@restaurant/shared": "*",
