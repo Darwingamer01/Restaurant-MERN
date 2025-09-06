@@ -1,0 +1,20 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "https://your-frontend-url.vercel.app",
+        "https://your-frontend-url.vercel.app/menu",
+        "https://your-frontend-url.vercel.app/reservations"
+      ],
+      "numberOfRuns": 3
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", {"minScore": 0.8}],
+        "categories:accessibility": ["error", {"minScore": 0.9}],
+        "categories:best-practices": ["error", {"minScore": 0.8}],
+        "categories:seo": ["error", {"minScore": 0.8}]
+      }
+    }
+  }
+}

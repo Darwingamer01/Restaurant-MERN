@@ -8,7 +8,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@shared': path.resolve(__dirname, '../../packages/shared/src')
-    }
+    },
   },
   server: {
     port: 5173,
@@ -16,12 +16,18 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
-        changeOrigin: true
-      }
-    }
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     outDir: 'dist',
     sourcemap: true
+  },
+  test: { // ✅ ADD TEST CONFIGURATION
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test-setup.ts',
   }
 });

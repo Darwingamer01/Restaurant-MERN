@@ -1,22 +1,52 @@
-﻿import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import Layout from './components/Layout';
-import HomePage from './pages/HomePage';
-import NotFoundPage from './pages/NotFoundPage';
+﻿// apps/frontend/src/App.tsx (FIXED - Remove BrowserRouter)
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom'; // ✅ Removed BrowserRouter import
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { Navbar } from './components/layout/Navbar';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { Dashboard } from './pages/Dashboard';
+import { Home } from './pages/Home';
+import './index.css';
 
-const App: React.FC = () => {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+export default function App() {
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
-      <Toaster position="top-right" />
-    </>
+    <QueryClientProvider client={queryClient}>
+      {/* ✅ REMOVED: BrowserRouter from here */}
+      <AuthProvider>
+        <div className="min-h-screen bg-background">
+          <Navbar />
+          <main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </AuthProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
-};
-
-export default App;
+}

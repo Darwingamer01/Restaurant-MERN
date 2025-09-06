@@ -14,13 +14,20 @@
     "build:backend": "npm run build --workspace=apps/backend",
     "build": "npm run build:backend && npm run build:frontend",
     "test": "npm run test --workspaces",
-    "setup": "powershell -ExecutionPolicy Bypass -File scripts/auto-setup.ps1"
+    "setup": "powershell -ExecutionPolicy Bypass -File scripts/auto-setup.ps1",
+    "ci:install": "npm ci",
+    "ci:build": "npm run build --workspaces",
+    "ci:test": "npm test --workspaces",
+    "ci:test:coverage": "npm run test:coverage --workspaces",
+    "ci:lint": "npm run lint --workspaces",
+    "ci:audit": "npm audit --audit-level=moderate"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
     "@types/mongodb-memory-server": "^1.8.0",
     "concurrently": "^8.2.0",
     "cross-env": "^10.0.0",
+    "dotenv-cli": "^10.0.0",
     "mongodb-memory-server": "^10.2.0",
     "typescript": "^5.9.2"
   },
@@ -29,6 +36,8 @@
     "npm": ">=10.0.0"
   },
   "dependencies": {
-    "cookie-parser": "^1.4.7"
+    "cookie-parser": "^1.4.7",
+    "dotenv-flow": "^4.1.0",
+    "lucide-react": "^0.542.0"
   }
 }

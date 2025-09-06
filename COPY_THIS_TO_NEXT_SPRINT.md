@@ -575,69 +575,24 @@ After Sprint 1 completion:
 - Unsplash API key for food images
 - Vercel and Render accounts for deployment (Sprint 5)
 
-
-### REPO_STRUCTURE
 restaurant-mern/
 ├── apps/
-│   ├── frontend/
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   │   ├── ui/
-│   │   │   │   └── Layout.tsx
-│   │   │   ├── pages/
-│   │   │   │   ├── HomePage.tsx
-│   │   │   │   └── NotFoundPage.tsx
-│   │   │   ├── hooks/
-│   │   │   ├── services/
-│   │   │   ├── utils/
-│   │   │   ├── contexts/
-│   │   │   ├── __tests__/
-│   │   │   │   └── App.test.tsx
-│   │   │   ├── App.tsx
-│   │   │   ├── main.tsx
-│   │   │   └── index.css
-│   │   ├── public/
-│   │   ├── index.html
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   ├── tsconfig.node.json
-│   │   ├── vite.config.ts
-│   │   ├── tailwind.config.js
-│   │   └── postcss.config.js
-│   └── backend/
-│       ├── src/
-│       │   ├── models/
-│       │   │   └── User.ts
-│       │   ├── routes/
-│       │   ├── middleware/
-│       │   ├── controllers/
-│       │   ├── services/
-│       │   ├── utils/
-│       │   │   └── config.ts
-│       │   ├── scripts/
-│       │   │   └── seed.ts
-│       │   ├── __tests__/
-│       │   │   └── health.test.ts
-│       │   └── server.ts
-│       ├── package.json
-│       ├── tsconfig.json
-│       └── jest.config.js
-├── packages/
-│   └── shared/
-│       ├── src/
-│       │   ├── types.ts
-│       │   └── index.ts
-│       ├── package.json
-│       └── tsconfig.json
-├── scripts/
-│   ├── auto-setup.ps1
-│   └── download-assets.ps1
-├── .env.example
-├── ARCH_NOTES.md
-├── NEXT_STEPS.md
-├── openapi.yaml
-├── package.json
-├── tsconfig.json
-└── README.md
-
---- END COPY_THIS_TO_NEXT_SPRINT ---
+│ ├── frontend/ # React app (localhost:5173)
+│ │ ├── src/
+│ │ │ ├── components/ # Auth forms, UI components
+│ │ │ ├── contexts/ # AuthContext with React Query
+│ │ │ ├── pages/ # Dashboard, Login, Register
+│ │ │ └── utils/
+│ │ └── dist/ # Build output
+│ └── backend/ # Express API (localhost:5000)
+│ ├── src/
+│ │ ├── models/ # 6 models implemented
+│ │ ├── routes/ # Auth complete, others placeholder
+│ │ ├── middleware/ # Authentication middleware
+│ │ ├── scripts/ # Seed script with test users
+│ │ └── tests/ # Test suite
+│ └── coverage/ # Test coverage reports
+├── packages/shared/ # Shared types and schemas
+├── ARCH_NOTES.md # This documentation
+├── COPY_THIS_TO_NEXT_SPRINT.md # Handoff file
+└── NEXT_STEPS.md # Sprint planning
