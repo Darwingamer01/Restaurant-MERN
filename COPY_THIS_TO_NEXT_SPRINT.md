@@ -596,3 +596,75 @@ restaurant-mern/
 ├── ARCH_NOTES.md # This documentation
 ├── COPY_THIS_TO_NEXT_SPRINT.md # Handoff file
 └── NEXT_STEPS.md # Sprint planning
+
+--- COPY_THIS_TO_NEXT_SPRINT ---
+
+# Sprint 2 → Sprint 3 Transition - Restaurant MERN
+
+## ✅ **Sprint 2 Achievements (COMPLETED)**
+- Complete frontend authentication system with JWT tokens
+- Protected routing with React Router v6
+- shadcn/ui component library integration
+- React Query state management
+- Cross-tab authentication synchronization
+- Responsive UI foundation with Tailwind CSS
+- Comprehensive testing suite (21+ tests passing)
+- Automated CI/CD pipeline with GitHub Actions
+
+## 🎯 **Sprint 3 Focus: Core Restaurant Features**
+
+### **Immediate Sprint 3 Priorities:**
+1. **Menu Management**: Complete dishes CRUD API with image uploads
+2. **Customer Menu UI**: Browse dishes with search and filtering
+3. **Reservation System**: Calendar integration and booking workflow
+4. **Coupon Integration**: Apply discounts during order process
+5. **Shopping Cart**: Persistent cart state and order calculation
+
+### **Sprint 3 Technical Stack Additions:**
+Backend dependencies to add
+npm install cloudinary multer @types/multer --workspace=apps/backend
+
+Frontend dependencies to add
+npm install @fullcalendar/react @fullcalendar/daygrid --workspace=apps/frontend
+npm install @hookform/resolvers date-fns --workspace=apps/frontend
+
+
+### **Key Architecture Decisions Made in Sprint 2:**
+- JWT refresh token rotation for security
+- React Query for optimistic updates
+- Cross-tab authentication state sync
+- Component-first design approach
+- TypeScript strict mode enforcement
+
+### **Sprint 3 Success Metrics:**
+- Customers can browse and filter menu items
+- Users can make table reservations with calendar selection
+- Coupons can be applied and validated during checkout
+- Shopping cart persists across sessions
+- Admin can manage dishes with image uploads
+
+### **Environment Variables to Add for Sprint 3:**
+Cloudinary for image uploads
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+Email service (for reservation confirmations)
+EMAIL_SERVICE_API_KEY=your_email_key
+
+
+### **Database Models Status:**
+- ✅ **User Model**: Complete with authentication
+- ✅ **Coupon Model**: Complete with validation
+- 🚧 **Dish Model**: Needs image upload integration
+- 🚧 **Reservation Model**: Needs availability logic
+- 🚧 **Order Model**: Needs cart integration
+
+### **Next Sprint Handoff Items:**
+- Enhanced dishes API with Cloudinary integration
+- Calendar-based reservation system
+- Coupon application workflow
+- Shopping cart state management
+- Admin dashboard for content management
+
+--- END COPY_THIS_TO_NEXT_SPRINT ---
